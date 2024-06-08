@@ -6,31 +6,43 @@ function CreateId() {
     name: "",
     college: "",
     myLocation: "",
+    gender: "",
   });
-  let getValues = () => {
-    setdata({
-      name: document.getElementById("name").value,
-      college: document.getElementById("college").value,
-      myLocation: document.getElementById("location").value,
-    });
 
+  let [finalData, setfinalData] = useState({});
+
+  let [errorlist, seterrorlist] = useState([]);
+  let myData;
+  let getData = (e) => {
+    myData = { ...data };
+    myData[e.target.name] = e.target.value;
+    console.log(myData);
+    setdata(myData);
+  };
+
+  let getValues = () => {
     console.log(data);
+    setfinalData(data);
+    // console.log(data);
     var validateResponse = validat();
-    console.log(validateResponse);
+    console.log(validateResponse.error);
+    // console.log(validateResponse.error.details);
+    if (validateResponse.error) {
+      seterrorlist(validateResponse.error.details);
+    } else {
+      seterrorlist([]);
+    }
   };
   let validat = () => {
     const schema = Joi.object({
       name: Joi.string().min(4).required(),
       college: Joi.string().min(5).required(),
       myLocation: Joi.string(),
+      gender: Joi.required(),
     });
     return schema.validate(data, { abortEarly: false });
   };
 
-  //   useEffect(() => {
-  //     let { name, college, location } = data;
-  //     console.log(data);
-  //   }, []);
   return (
     <div className="container mt-5 ">
       <h2 className="text-center ">ID Card Generator</h2>
@@ -48,9 +60,10 @@ function CreateId() {
                   Enter Name :
                 </label>
                 <input
+                  onChange={getData}
                   className="form-control"
                   type="text"
-                  name="Name"
+                  name="name"
                   id="name"
                 />
               </div>
@@ -59,9 +72,10 @@ function CreateId() {
                   College Name :
                 </label>
                 <input
+                  onChange={getData}
                   className="form-control"
                   type="text"
-                  name="CollegeName"
+                  name="college"
                   id="college"
                 />
               </div>
@@ -70,9 +84,10 @@ function CreateId() {
                   Enter Location :
                 </label>
                 <input
+                  onChange={getData}
                   className="form-control"
                   type="text"
-                  name="Location"
+                  name="myLocation"
                   id="location"
                 />
               </div>
@@ -81,13 +96,25 @@ function CreateId() {
                   <label className="p-1" htmlFor="male">
                     Male
                   </label>
-                  <input type="radio" name="gender" id="male" />
+                  <input
+                    onChange={getData}
+                    type="radio"
+                    name="gender"
+                    value={"Male"}
+                    id="male"
+                  />
                 </div>
                 <div className="d-flex justify-content-center align-items-center">
                   <label className="p-1" htmlFor="female">
                     Female
                   </label>
-                  <input type="radio" name="gender" id="female" />
+                  <input
+                    onChange={getData}
+                    type="radio"
+                    name="gender"
+                    value={"Female"}
+                    id="female"
+                  />
                 </div>
               </div>
               <button
@@ -97,6 +124,11 @@ function CreateId() {
               >
                 Generate
               </button>
+              {errorlist.map((error, index) => (
+                <div key={index} className="alert alert-danger p-2">
+                  {error.message}
+                </div>
+              ))}
             </form>
           </section>
         </div>
@@ -107,9 +139,9 @@ function CreateId() {
             <img className="w-50 start" src={img1} alt="my img" />
             {/* </div> */}
             <div className="text">
-              <p>Name: {data.name}</p>
-              <p>College Name: {data.college}</p>
-              <p>Location: {data.myLocation}</p>
+              <p>Name: {finalData.name}</p>
+              <p>College Name: {finalData.college}</p>
+              <p>Location: {finalData.myLocation}</p>
             </div>
           </div>
         </div>
